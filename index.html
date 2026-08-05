@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health Bill Advisor — Find Your Rate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1C2321;
+    --paper:#FBF8F2;
+    --paper-2:#F3EEE2;
+    --teal:#0F3D3E;
+    --teal-2:#16575A;
+    --gold:#D9A441;
+    --gold-dark:#B9852B;
+    --line:#D8D2C4;
+    --red:#B23A34;
+    --shadow: 0 20px 50px -20px rgba(15,61,62,0.25);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper-2);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(15,61,62,0.06) 1px, transparent 0);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding: 28px 16px 60px;
+  }
+  a{color:inherit;}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    width:100%;
+    max-width:920px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:14px;
+    margin-bottom:22px;
+  }
+  .logo{display:flex;align-items:center;gap:10px;}
+  .logo svg{width:150px;height:auto;display:block;}
+  .callbox{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:var(--teal);
+    color:var(--paper);
+    padding:10px 18px;
+    border-radius:10px;
+    text-decoration:none;
+    box-shadow: var(--shadow);
+  }
+  .callbox .ico{
+    width:34px;height:34px;border-radius:50%;
+    background:var(--gold);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .callbox .ico svg{width:16px;height:16px;fill:var(--teal);}
+  .callbox .txt{line-height:1.25;}
+  .callbox .txt small{display:block;font-size:11px;letter-spacing:.05em;text-transform:uppercase;opacity:.75;font-family:'IBM Plex Mono',monospace;}
+  .callbox .txt strong{font-family:'Fraunces',serif;font-size:19px;font-weight:600;}
+
+  /* ---------- Savings ticker (signature element) ---------- */
+  .savings-tag{
+    width:100%;
+    max-width:920px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:var(--paper);
+    border:1px dashed var(--line);
+    border-radius:10px;
+    padding:10px 18px;
+    margin-bottom:18px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+  }
+  .savings-tag .lbl{color:var(--teal-2);letter-spacing:.04em;text-transform:uppercase;font-size:11px;}
+  .savings-tag .amt{
+    color:var(--gold-dark);
+    font-weight:600;
+    font-size:17px;
+    transition: color .2s;
+  }
+  .savings-tag .amt.bump{ animation: bump .5s ease; }
+  @keyframes bump{ 0%{transform:scale(1);} 30%{transform:scale(1.18); color:var(--red);} 100%{transform:scale(1);} }
+
+  /* ---------- Header banner ---------- */
+  .banner{
+    width:100%;max-width:920px;
+    background:var(--teal);
+    color:var(--paper);
+    text-align:center;
+    padding:16px 20px;
+    border-radius:12px 12px 0 0;
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:19px;
+    letter-spacing:.01em;
+  }
+
+  /* ---------- Receipt card ---------- */
+  .receipt{
+    width:100%;max-width:920px;
+    background:var(--paper);
+    border-radius:0 0 12px 12px;
+    box-shadow: var(--shadow);
+    position:relative;
+    overflow:hidden;
+  }
+  .receipt::before{
+    content:"";
+    position:absolute; left:0; right:0; top:0; height:6px;
+    background: repeating-linear-gradient(90deg, transparent 0 10px, var(--paper-2) 10px 14px);
+  }
+  .progress-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 40px 0;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--teal-2);
+    letter-spacing:.04em;
+  }
+  .progress-track{
+    width:100%;max-width:920px;margin:10px auto 0;
+    padding:0 40px;
+  }
+  .progress-bar{
+    height:8px;background:var(--paper-2);border-radius:6px;overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .progress-bar > div{
+    height:100%;background:linear-gradient(90deg, var(--teal), var(--gold));
+    width:0%;
+    transition:width .4s ease;
+  }
+
+  .step{
+    display:none;
+    padding: 34px 40px 40px;
+    animation: fade .35s ease;
+  }
+  .step.active{display:block;}
+  @keyframes fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  .q-title{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:26px;
+    color:var(--teal);
+    margin:0 0 6px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .q-sub{
+    color:var(--teal-2);
+    font-style:italic;
+    font-size:15px;
+    margin:0 0 26px;
+  }
+
+  .field-label{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:8px;display:block;}
+  .req{color:var(--red);}
+
+  input[type=text], input[type=email], input[type=tel], input[type=date]{
+    width:100%;
+    padding:14px 16px;
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    background:#fff;
+    outline:none;
+    transition:border-color .15s;
+  }
+  input:focus{border-color:var(--teal);}
+
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media (max-width:560px){ .row2{grid-template-columns:1fr;} }
+
+  .phone-grid{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:14px;max-width:420px;}
+
+  .choice-grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:8px;
+  }
+  .choice-grid.cols-4{grid-template-columns:repeat(4,1fr);}
+  @media (max-width:560px){
+    .choice-grid.cols-4{grid-template-columns:repeat(2,1fr);}
+  }
+  .choice{
+    border:1.5px solid var(--line);
+    background:#fff;
+    border-radius:10px;
+    padding:18px 14px;
+    text-align:center;
+    cursor:pointer;
+    font-weight:600;
+    font-size:15px;
+    transition: all .15s;
+    user-select:none;
+  }
+  .choice:hover{border-color:var(--teal-2);}
+  .choice.selected{
+    background:var(--teal);
+    border-color:var(--teal);
+    color:var(--paper);
+  }
+  .choice .ic{display:block;margin:0 auto 8px;width:22px;height:22px;fill:var(--teal);}
+  .choice.selected .ic{fill:var(--gold);}
+
+  .life-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+  @media (max-width:700px){ .life-grid{grid-template-columns:repeat(2,1fr);} }
+  .life-card{
+    border:1.5px solid var(--line);background:#fff;border-radius:10px;
+    padding:16px 12px;cursor:pointer;font-size:13.5px;font-weight:600;
+    display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;
+    transition:all .15s;
+  }
+  .life-card .ic{width:22px;height:22px;fill:var(--teal-2);}
+  .life-card.selected{background:var(--teal);color:var(--paper);border-color:var(--teal);}
+  .life-card.selected .ic{fill:var(--gold);}
+  .life-card.none-opt.selected{background:var(--red);border-color:var(--red);}
+
+  .slider-wrap{margin: 30px 0 10px;}
+  .slider-val{
+    font-family:'Fraunces',serif;font-weight:600;font-size:32px;color:var(--teal);
+    text-align:center;margin-bottom:18px;
+  }
+  input[type=range]{
+    width:100%; -webkit-appearance:none; height:8px; border-radius:6px;
+    background:var(--paper-2); border:1px solid var(--line);
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:24px;height:24px;border-radius:50%;
+    background:var(--teal); border:3px solid var(--gold); cursor:pointer;
+  }
+  .slider-ticks{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--teal-2);margin-top:8px;}
+
+  .btn-row{margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:14px;}
+  .btn-next{
+    width:100%; max-width:420px;
+    background:linear-gradient(180deg, var(--gold), var(--gold-dark));
+    color:var(--teal);
+    border:none;
+    padding:16px 20px;
+    font-size:17px;
+    font-weight:700;
+    border-radius:10px;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+    box-shadow: 0 10px 24px -8px rgba(185,133,43,0.55);
+    transition: transform .12s;
+  }
+  .btn-next:hover{transform:translateY(-2px);}
+  .btn-next:disabled{opacity:.45; cursor:not-allowed; transform:none;}
+  .btn-back{background:none;border:none;color:var(--teal-2);font-size:13.5px;cursor:pointer;text-decoration:underline;font-family:'Inter',sans-serif;}
+
+  .hint{font-size:12.5px;color:#8a8375;margin-top:8px;}
+
+  /* ---------- Final CTA step ---------- */
+  .cta-final{text-align:center;padding:20px 10px 4px;}
+  .stamp{
+    display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:12px;
+    letter-spacing:.12em; color:var(--red); border:1.5px solid var(--red);
+    border-radius:6px; padding:4px 10px; transform:rotate(-3deg); margin-bottom:18px;
+  }
+  .cta-final h2{
+    font-family:'Fraunces',serif;font-size:28px;color:var(--teal);margin:0 0 10px;
+  }
+  .cta-final p{color:#5b5346;font-size:15.5px;max-width:480px;margin:0 auto 28px;}
+  .call-btn{
+    display:inline-flex; align-items:center; gap:14px;
+    background:var(--teal); color:var(--paper); text-decoration:none;
+    padding:20px 34px; border-radius:14px; box-shadow:var(--shadow);
+    font-family:'Fraunces',serif;
+  }
+  .call-btn .ico{
+    width:44px;height:44px;border-radius:50%;background:var(--gold);
+    display:flex;align-items:center;justify-content:center; flex-shrink:0;
+  }
+  .call-btn .ico svg{width:20px;height:20px;fill:var(--teal);}
+  .call-btn .num{font-size:26px;font-weight:700;line-height:1.1;}
+  .call-btn .lbl{font-family:'Inter',sans-serif;font-size:12px;letter-spacing:.05em;text-transform:uppercase;opacity:.75;}
+  .receipt-total{
+    margin-top:30px; border-top:1px dashed var(--line); padding-top:18px;
+    font-family:'IBM Plex Mono',monospace; font-size:14px; color:var(--teal-2);
+    display:flex; justify-content:space-between; max-width:360px; margin-left:auto; margin-right:auto;
+  }
+  .receipt-total b{color:var(--gold-dark); font-size:16px;}
+
+  /* footer */
+  .foot{
+    max-width:920px;width:100%;margin-top:26px;
+    font-size:11.5px;line-height:1.7;color:#8a8375;
+    text-align:left;
+  }
+  .foot a{text-decoration:underline;}
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="logo" id="logoSlot"></div>
+    <a class="callbox" href="tel:8775550199">
+      <span class="ico"><svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .5 1 1.1v3.7c0 .6-.5 1.1-1.1 1.1C10.6 21.5 2.5 13.4 2.5 3.7c0-.6.5-1.1 1.1-1.1H7.3c.6 0 1.1.5 1.1 1.1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.2 1.1L6.6 10.8z"/></svg></span>
+      <span class="txt"><small>Talk to an advisor now</small><strong>(877) 555-0199</strong></span>
+    </a>
+  </div>
+
+  <div class="savings-tag">
+    <span class="lbl">Your Bill Advisor estimate</span>
+    <span class="amt" id="savingsAmt">$0/mo potential savings</span>
+  </div>
+
+  <div class="banner" id="bannerText">Find &amp; Compare Health Plans</div>
+
+  <div class="receipt">
+    <div class="progress-row">
+      <span id="refCode">REF# HBA-000000</span>
+      <span id="stepCode">STEP 01 / 10</span>
+    </div>
+    <div class="progress-track"><div class="progress-bar"><div id="progressFill"></div></div></div>
+
+    <!-- STEP 0: ZIP -->
+    <div class="step active" data-step="0">
+      <h2 class="q-title">What's your zip code?</h2>
+      <p class="q-sub">We'll show plans and rates available in your area.</p>
+      <label class="field-label">Zip code <span class="req">*</span></label>
+      <input type="text" id="zip" maxlength="5" inputmode="numeric" placeholder="e.g. 80741">
+      <div class="btn-row"><button class="btn-next" onclick="next(0)">Next</button></div>
+    </div>
+
+    <!-- STEP 1: DOB -->
+    <div class="step" data-step="1">
+      <h2 class="q-title">What is your date of birth?</h2>
+      <p class="q-sub">This helps us calculate age-based premium estimates.</p>
+      <label class="field-label">Date of birth <span class="req">*</span></label>
+      <input type="date" id="dob">
+      <div class="btn-row">
+        <button class="btn-next" onclick="next(1)">Next</button>
+        <button class="btn-back" onclick="back(1)">Back</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: GENDER -->
+    <div class="step" data-step="2">
+      <h2 class="q-title">What is your gender?</h2>
+      <p class="q-sub">Average monthly premiums can vary by gender.</p>
+      <div class="choice-grid" id="genderGrid">
+        <div class="choice" data-val="Male" onclick="selectChoice(this,'genderGrid','gender')">
+          <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M12 13c-4.4 0-8 2.7-8 6v2h16v-2c0-3.3-3.6-6-8-6z"/></svg>
+          Male
+        </div>
+        <div class="choice" data-val="Female" onclick="selectChoice(this,'genderGrid','gender')">
+          <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="6" r="4"/><path d="M12 10c-1.1 0-2 .9-2 2v4H9l3 6 3-6h-1v-4c0-1.1-.9-2-2-2z"/></svg>
+          Female
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-next" id="nextBtn2" onclick="next(2)" disabled>Next</button>
+        <button class="btn-back" onclick="back(2)">Back</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: MEDICAL CONDITIONS -->
+    <div class="step" data-step="3">
+      <h2 class="q-title">Do you have any of the following medical conditions?</h2>
+      <p class="q-sub">Cancer, diabetes, heart disease, stroke, or another major condition.</p>
+      <div class="choice-grid" id="medGrid">
+        <div class="choice" data-val="No" onclick="selectChoice(this,'medGrid','medical')">No</div>
+        <div class="choice" data-val="Yes" onclick="selectChoice(this,'medGrid','medical')">Yes</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-next" id="nextBtn3" onclick="next(3)" disabled>Next</button>
+        <button class="btn-back" onclick="back(3)">Back</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: HOUSEHOLD SIZE -->
+    <div class="step" data-step="4">
+      <h2 class="q-title">What is your household size?</h2>
+      <p class="q-sub">Select the number of people to include in your quote.</p>
+      <div class="choice-grid cols-4" id="hhGrid">
+        <div class="choice" data-val="1" onclick="selectChoice(this,'hhGrid','household')">1</div>
+        <div class="choice" data-val="2" onclick="selectChoice(this,'hhGrid','household')">2</div>
+        <div class="choice" data-val="3" onclick="selectChoice(this,'hhGrid','household')">3</div>
+        <div class="choice" data-val="4" onclick="selectChoice(this,'hhGrid','household')">4</div>
+        <div class="choice" data-val="5" onclick="selectChoice(this,'hhGrid','household')">5</div>
+        <div class="choice" data-val="6" onclick="selectChoice(this,'hhGrid','household')">6</div>
+        <div class="choice" data-val="7" onclick="selectChoice(this,'hhGrid','household')">7</div>
+        <div class="choice" data-val="8+" onclick="selectChoice(this,'hhGrid','household')">8+</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-next" id="nextBtn4" onclick="next(4)" disabled>Next</button>
+        <button class="btn-back" onclick="back(4)">Back</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: INCOME -->
+    <div class="step" data-step="5">
+      <h2 class="q-title">What is your estimated household income?</h2>
+      <p class="q-sub">Used to determine eligibility for income-based subsidies.</p>
+      <div class="slider-wrap">
+        <div class="slider-val" id="incomeVal">$71,000</div>
+        <input type="range" id="incomeSlider" min="15000" max="107000" step="1000" value="71000" oninput="updateIncome()">
+        <div class="slider-ticks"><span>$15k</span><span>$61k</span><span>$107k or more</span></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-next" onclick="next(5)">Next</button>
+        <button class="btn-back" onclick="back(5)">Back</button>
+      </div>
+    </div>
+
+    <!-- STEP 6: LIFE EVENTS -->
+    <div class="step" data-step="6">
+      <h2 class="q-title">Have you experienced any of these in the last 60 days?</h2>
+      <p class="q-sub">Life events can open a special enrollment window.</p>
+      <div class="life-grid" id="lifeGrid">
+        <div class="life-card" data-val="Lost coverage" onclick="toggleLife(this)"><svg class="ic" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3z"/></svg>Lost health coverage</div>
+        <div class="life-card" data-val="Married or divorced" onclick="toggleLife(this)"><svg class="ic" viewBox="0 0 24 24"><circle cx="8" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/></svg>Married or divorced</div>
+        <div class="life-card" data-val="Had a baby" onclick="toggleLife(this)"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3a3 3 0 100 6 3 3 0 000-6zM5 20c0-4 3-7 7-7s7 3 7 7"/></svg>Had a baby or child</div>
+        <div class="life-card" data-val="Lost a family member" onclick="toggleLife(this)"><svg class="ic" viewBox="0 0 24 24"><path d="M12 2a4 4 0 100 8 4 4 0 000-8zM4 22c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>Lost a parent or spouse</div>
+        <div class="life-card" data-val="Moved states" onclick="toggleLife(this)"><svg class="ic" viewBox="0 0 24 24"><path d="M3 13h13l3 5H3z"/><circle cx="7" cy="20" r="1.5"/><circle cx="16" cy="20" r="1.5"/></svg>Moved to a new state</div>
+        <div class="life-card" data-val="Lost job" onclick="toggleLife(this)"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="11" rx="1"/><path d="M9 8V6a3 3 0 016 0v2"/></svg>Lost your job</div>
+        <div class="life-card" data-val="Started new job" onclick="toggleLife(this)"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>Started a new job</div>
+        <div class="life-card none-opt selected" data-val="None" onclick="toggleLife(this,true)"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>None of these apply</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-next" onclick="next(6)">Next</button>
+        <button class="btn-back" onclick="back(6)">Back</button>
+      </div>
+    </div>
+
+    <!-- STEP 7: ADDRESS -->
+    <div class="step" data-step="7">
+      <h2 class="q-title">What is your current address?</h2>
+      <p class="q-sub" id="addrSub">Used to match you with plans available near you.</p>
+      <div class="row2">
+        <div>
+          <label class="field-label">Street address <span class="req">*</span></label>
+          <input type="text" id="address" placeholder="123 Main St">
+        </div>
+        <div>
+          <label class="field-label">Zip code <span class="req">*</span></label>
+          <input type="text" id="zip2" maxlength="5" inputmode="numeric" placeholder="80741">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-next" onclick="next(7)">Next</button>
+        <button class="btn-back" onclick="back(7)">Back</button>
+      </div>
+    </div>
+
+    <!-- STEP 8: NAME -->
+    <div class="step" data-step="8">
+      <h2 class="q-title">What is your full name?</h2>
+      <div class="row2">
+        <div>
+          <label class="field-label">First name <span class="req">*</span></label>
+          <input type="text" id="fname" placeholder="John">
+        </div>
+        <div>
+          <label class="field-label">Last name <span class="req">*</span></label>
+          <input type="text" id="lname" placeholder="Doe">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-next" onclick="next(8)">Next</button>
+        <button class="btn-back" onclick="back(8)">Back</button>
+      </div>
+    </div>
+
+    <!-- STEP 9: CONTACT -->
+    <div class="step" data-step="9">
+      <h2 class="q-title">What is your contact information?</h2>
+      <p class="q-sub">So an advisor can send your quote and follow up.</p>
+      <label class="field-label">Email <span class="req">*</span></label>
+      <input type="email" id="email" placeholder="email@example.com" style="margin-bottom:20px;">
+      <label class="field-label">Phone <span class="req">*</span></label>
+      <div class="phone-grid">
+        <input type="text" id="p1" maxlength="3" inputmode="numeric" placeholder="555">
+        <input type="text" id="p2" maxlength="3" inputmode="numeric" placeholder="555">
+        <input type="text" id="p3" maxlength="4" inputmode="numeric" placeholder="5555">
+      </div>
+      <p class="hint">By submitting, you agree to be contacted by Health Bill Advisor and its licensed insurance partners about plan options, by phone, text, or email. Consent isn't required to purchase any plan. See our <a href="#">Privacy Policy</a> and <a href="#">Terms</a>.</p>
+      <div class="btn-row">
+        <button class="btn-next" onclick="submitForm()">Submit</button>
+        <button class="btn-back" onclick="back(9)">Back</button>
+      </div>
+    </div>
+
+    <!-- STEP 10: FINAL CTA -->
+    <div class="step" data-step="10">
+      <div class="cta-final">
+        <span class="stamp">QUOTE READY</span>
+        <h2 id="ctaName">You're all set!</h2>
+        <p>Based on your answers, you may qualify for lower monthly costs. A licensed advisor is standing by to walk through your options and lock in your rate.</p>
+        <a class="call-btn" href="tel:8775550199">
+          <span class="ico"><svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .5 1 1.1v3.7c0 .6-.5 1.1-1.1 1.1C10.6 21.5 2.5 13.4 2.5 3.7c0-.6.5-1.1 1.1-1.1H7.3c.6 0 1.1.5 1.1 1.1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.2 1.1L6.6 10.8z"/></svg></span>
+          <span>
+            <span class="lbl">Call now to claim your quote</span><br>
+            <span class="num">(877) 555-0199</span>
+          </span>
+        </a>
+        <div class="receipt-total">
+          <span>Est. monthly savings</span>
+          <b id="finalSavings">$0/mo</b>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    Health Bill Advisor connects consumers with licensed insurance agents and partner carriers. We are not affiliated with any government agency or health insurance exchange. Plan availability, pricing, and subsidy eligibility vary by carrier, location, and household details, and are provided for informational purposes only. Coverage is subject to the terms of the issuing carrier. This site does not offer every plan available in your area — contact Healthcare.gov or 1-800-MEDICARE for a full list of your options. By continuing, you agree to our <a href="#">Privacy Policy</a> and <a href="#">Terms &amp; Conditions</a>.
+  </div>
+
+<script>
+  const totalSteps = 11; // steps 0-10
+  let current = 0;
+  const answers = {};
+  const refCode = 'HBA-' + Math.floor(100000 + Math.random()*899999);
+
+  const zipCities = {
+    '80741':'Merino, CO','80202':'Denver, CO','90245':'El Segundo, CA',
+    '10001':'New York, NY','60601':'Chicago, IL','75201':'Dallas, TX'
+  };
+
+  const logoSVG = `<svg width="150" height="38" viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
+    <g transform="translate(4,10)">
+      <path d="M4 4 H52 V56 L46 60 L40 56 L34 60 L28 56 L22 60 L16 56 L10 60 L4 56 Z" fill="#FBF8F2" stroke="#0F3D3E" stroke-width="3" stroke-linejoin="round"/>
+      <line x1="12" y1="16" x2="44" y2="16" stroke="#0F3D3E" stroke-width="2.5" stroke-linecap="round" opacity="0.35"/>
+      <line x1="12" y1="23" x2="36" y2="23" stroke="#0F3D3E" stroke-width="2.5" stroke-linecap="round" opacity="0.35"/>
+      <path d="M8 40 H18 L22 30 L28 48 L32 38 L36 40 H48" fill="none" stroke="#D9A441" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="72" y="38" font-family="Fraunces, serif" font-size="26" font-weight="600" fill="#0F3D3E">Health Bill</text>
+    <text x="72" y="63" font-family="Fraunces, serif" font-size="26" font-weight="600" fill="#D9A441">Advisor</text>
+  </svg>`;
+  document.getElementById('logoSlot').innerHTML = logoSVG;
+
+  function pad(n){ return n.toString().padStart(2,'0'); }
+  function updateChrome(){
+    document.getElementById('refCode').textContent = 'REF# ' + refCode;
+    document.getElementById('stepCode').textContent = 'STEP ' + pad(current+1) + ' / ' + totalSteps;
+    document.getElementById('progressFill').style.width = (current/(totalSteps-1)*100) + '%';
+  }
+
+  function showStep(i){
+    document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+    document.querySelector('.step[data-step="'+i+'"]').classList.add('active');
+    current = i;
+    updateChrome();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function bumpSavings(){
+    const el = document.getElementById('savingsAmt');
+    const bump = 15 + Math.floor(Math.random()*35);
+    const curVal = parseInt((answers._savings||0));
+    answers._savings = curVal + bump;
+    el.textContent = '$' + answers._savings + '/mo potential savings';
+    el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
+  }
+
+  function next(fromStep){
+    if(!validateStep(fromStep)) return;
+    bumpSavings();
+    showStep(fromStep+1);
+  }
+  function back(fromStep){ showStep(fromStep-1); }
+
+  function validateStep(s){
+    if(s===0){
+      const z = document.getElementById('zip').value.trim();
+      if(z.length!==5){ alert('Please enter a valid 5-digit zip code.'); return false; }
+      answers.zip = z;
+      const city = zipCities[z] || 'your area';
+      document.getElementById('bannerText').textContent = 'Find & Compare Health Plans in ' + city;
+      document.getElementById('addrSub').textContent = 'Used to match you with plans available near ' + city + '.';
+      return true;
+    }
+    if(s===1){
+      const d = document.getElementById('dob').value;
+      if(!d){ alert('Please enter your date of birth.'); return false; }
+      answers.dob = d; return true;
+    }
+    if(s===2){ return !!answers.gender; }
+    if(s===3){ return !!answers.medical; }
+    if(s===4){ return !!answers.household; }
+    if(s===5){ return true; }
+    if(s===6){ return true; }
+    if(s===7){
+      const a = document.getElementById('address').value.trim();
+      const z2 = document.getElementById('zip2').value.trim();
+      if(!a || z2.length!==5){ alert('Please enter your street address and a valid zip code.'); return false; }
+      answers.address=a; answers.zip2=z2; return true;
+    }
+    if(s===8){
+      const f = document.getElementById('fname').value.trim();
+      const l = document.getElementById('lname').value.trim();
+      if(!f || !l){ alert('Please enter your first and last name.'); return false; }
+      answers.fname=f; answers.lname=l; return true;
+    }
+    return true;
+  }
+
+  function selectChoice(el, gridId, key){
+    document.querySelectorAll('#'+gridId+' .choice').forEach(c=>c.classList.remove('selected'));
+    el.classList.add('selected');
+    answers[key] = el.getAttribute('data-val');
+    const btn = document.getElementById('nextBtn'+current);
+    if(btn) btn.disabled = false;
+  }
+
+  let lifeEvents = [];
+  function toggleLife(el, isNone){
+    if(isNone){
+      document.querySelectorAll('.life-card').forEach(c=>c.classList.remove('selected'));
+      el.classList.add('selected');
+      lifeEvents = ['None'];
+      return;
+    }
+    document.querySelector('.life-card.none-opt').classList.remove('selected');
+    lifeEvents = lifeEvents.filter(v=>v!=='None');
+    el.classList.toggle('selected');
+    const val = el.getAttribute('data-val');
+    if(el.classList.contains('selected')){ lifeEvents.push(val); }
+    else{ lifeEvents = lifeEvents.filter(v=>v!==val); }
+    if(lifeEvents.length===0){
+      document.querySelector('.life-card.none-opt').classList.add('selected');
+      lifeEvents = ['None'];
+    }
+    answers.lifeEvents = lifeEvents;
+  }
+
+  function updateIncome(){
+    const v = document.getElementById('incomeSlider').value;
+    const label = (v >= 107000) ? '$107,000 or more' : ('$' + Number(v).toLocaleString());
+    document.getElementById('incomeVal').textContent = label;
+    answers.income = v;
+  }
+
+  function submitForm(){
+    const email = document.getElementById('email').value.trim();
+    const p1 = document.getElementById('p1').value.trim();
+    const p2 = document.getElementById('p2').value.trim();
+    const p3 = document.getElementById('p3').value.trim();
+    if(!email.includes('@')){ alert('Please enter a valid email address.'); return; }
+    if(p1.length!==3 || p2.length!==3 || p3.length!==4){ alert('Please enter a valid 10-digit phone number.'); return; }
+    answers.email = email;
+    answers.phone = p1+'-'+p2+'-'+p3;
+    bumpSavings();
+    document.getElementById('ctaName').textContent = (answers.fname ? answers.fname+', y' : "Y") + "ou're all set!";
+    document.getElementById('finalSavings').textContent = '$' + (answers._savings||0) + '/mo';
+    showStep(10);
+  }
+
+  updateChrome();
+</script>
+</body>
+</html>
