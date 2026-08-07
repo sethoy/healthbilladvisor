@@ -169,33 +169,13 @@
     margin:0 0 26px;
   }
 
-  .field-label{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:8px;display:block;}
-  .req{color:var(--red);}
-
-  input[type=text], input[type=email], input[type=tel], input[type=date]{
-    width:100%;
-    padding:14px 16px;
-    border:1.5px solid var(--line);
-    border-radius:8px;
-    font-family:'Inter',sans-serif;
-    font-size:15px;
-    background:#fff;
-    outline:none;
-    transition:border-color .15s;
-  }
-  input:focus{border-color:var(--teal);}
-
-  .row2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
-  @media (max-width:560px){ .row2{grid-template-columns:1fr;} }
-
-  .phone-grid{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:14px;max-width:420px;}
-
   .choice-grid{
     display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:8px;
   }
+  .choice-grid.cols-3{grid-template-columns:repeat(3,1fr);}
   .choice-grid.cols-4{grid-template-columns:repeat(4,1fr);}
   @media (max-width:560px){
-    .choice-grid.cols-4{grid-template-columns:repeat(2,1fr);}
+    .choice-grid.cols-4, .choice-grid.cols-3{grid-template-columns:repeat(2,1fr);}
   }
   .choice{
     border:1.5px solid var(--line);
@@ -231,21 +211,6 @@
   .life-card.selected .ic{fill:var(--gold);}
   .life-card.none-opt.selected{background:var(--red);border-color:var(--red);}
 
-  .slider-wrap{margin: 30px 0 10px;}
-  .slider-val{
-    font-family:'Fraunces',serif;font-weight:600;font-size:32px;color:var(--teal);
-    text-align:center;margin-bottom:18px;
-  }
-  input[type=range]{
-    width:100%; -webkit-appearance:none; height:8px; border-radius:6px;
-    background:var(--paper-2); border:1px solid var(--line);
-  }
-  input[type=range]::-webkit-slider-thumb{
-    -webkit-appearance:none; width:24px;height:24px;border-radius:50%;
-    background:var(--teal); border:3px solid var(--gold); cursor:pointer;
-  }
-  .slider-ticks{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--teal-2);margin-top:8px;}
-
   .btn-row{margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:14px;}
   .btn-next{
     width:100%; max-width:420px;
@@ -264,8 +229,6 @@
   .btn-next:hover{transform:translateY(-2px);}
   .btn-next:disabled{opacity:.45; cursor:not-allowed; transform:none;}
   .btn-back{background:none;border:none;color:var(--teal-2);font-size:13.5px;cursor:pointer;text-decoration:underline;font-family:'Inter',sans-serif;}
-
-  .hint{font-size:12.5px;color:#8a8375;margin-top:8px;}
 
   /* ---------- Final CTA step ---------- */
   .cta-final{text-align:center;padding:20px 10px 4px;}
@@ -311,9 +274,9 @@
 
   <div class="topbar">
     <div class="logo" id="logoSlot"></div>
-    <a class="callbox" href="tel:8775550199">
+    <a class="callbox" href="tel:18777550384">
       <span class="ico"><svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .5 1 1.1v3.7c0 .6-.5 1.1-1.1 1.1C10.6 21.5 2.5 13.4 2.5 3.7c0-.6.5-1.1 1.1-1.1H7.3c.6 0 1.1.5 1.1 1.1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.2 1.1L6.6 10.8z"/></svg></span>
-      <span class="txt"><small>Talk to an advisor now</small><strong>(877) 555-0199</strong></span>
+      <span class="txt"><small>Talk to an advisor now</small><strong>1-877-755-0384</strong></span>
     </a>
   </div>
 
@@ -327,33 +290,29 @@
   <div class="receipt">
     <div class="progress-row">
       <span id="refCode">REF# HBA-000000</span>
-      <span id="stepCode">STEP 01 / 10</span>
+      <span id="stepCode">STEP 01 / 07</span>
     </div>
     <div class="progress-track"><div class="progress-bar"><div id="progressFill"></div></div></div>
 
-    <!-- STEP 0: ZIP -->
+    <!-- STEP 0: AGE RANGE -->
     <div class="step active" data-step="0">
-      <h2 class="q-title">What's your zip code?</h2>
-      <p class="q-sub">We'll show plans and rates available in your area.</p>
-      <label class="field-label">Zip code <span class="req">*</span></label>
-      <input type="text" id="zip" maxlength="5" inputmode="numeric" placeholder="e.g. 80741">
-      <div class="btn-row"><button class="btn-next" onclick="next(0)">Next</button></div>
-    </div>
-
-    <!-- STEP 1: DOB -->
-    <div class="step" data-step="1">
-      <h2 class="q-title">What is your date of birth?</h2>
+      <h2 class="q-title">What is your age range?</h2>
       <p class="q-sub">This helps us calculate age-based premium estimates.</p>
-      <label class="field-label">Date of birth <span class="req">*</span></label>
-      <input type="date" id="dob">
+      <div class="choice-grid cols-3" id="ageGrid">
+        <div class="choice" data-val="18-25" onclick="selectChoice(this,'ageGrid','age')">18-25</div>
+        <div class="choice" data-val="26-35" onclick="selectChoice(this,'ageGrid','age')">26-35</div>
+        <div class="choice" data-val="36-45" onclick="selectChoice(this,'ageGrid','age')">36-45</div>
+        <div class="choice" data-val="46-55" onclick="selectChoice(this,'ageGrid','age')">46-55</div>
+        <div class="choice" data-val="56-64" onclick="selectChoice(this,'ageGrid','age')">56-64</div>
+        <div class="choice" data-val="65+" onclick="selectChoice(this,'ageGrid','age')">65+</div>
+      </div>
       <div class="btn-row">
-        <button class="btn-next" onclick="next(1)">Next</button>
-        <button class="btn-back" onclick="back(1)">Back</button>
+        <button class="btn-next" id="nextBtn0" onclick="next(0)" disabled>Next</button>
       </div>
     </div>
 
-    <!-- STEP 2: GENDER -->
-    <div class="step" data-step="2">
+    <!-- STEP 1: GENDER -->
+    <div class="step" data-step="1">
       <h2 class="q-title">What is your gender?</h2>
       <p class="q-sub">Average monthly premiums can vary by gender.</p>
       <div class="choice-grid" id="genderGrid">
@@ -367,13 +326,13 @@
         </div>
       </div>
       <div class="btn-row">
-        <button class="btn-next" id="nextBtn2" onclick="next(2)" disabled>Next</button>
-        <button class="btn-back" onclick="back(2)">Back</button>
+        <button class="btn-next" id="nextBtn1" onclick="next(1)" disabled>Next</button>
+        <button class="btn-back" onclick="back(1)">Back</button>
       </div>
     </div>
 
-    <!-- STEP 3: MEDICAL CONDITIONS -->
-    <div class="step" data-step="3">
+    <!-- STEP 2: MEDICAL CONDITIONS -->
+    <div class="step" data-step="2">
       <h2 class="q-title">Do you have any of the following medical conditions?</h2>
       <p class="q-sub">Cancer, diabetes, heart disease, stroke, or another major condition.</p>
       <div class="choice-grid" id="medGrid">
@@ -381,13 +340,13 @@
         <div class="choice" data-val="Yes" onclick="selectChoice(this,'medGrid','medical')">Yes</div>
       </div>
       <div class="btn-row">
-        <button class="btn-next" id="nextBtn3" onclick="next(3)" disabled>Next</button>
-        <button class="btn-back" onclick="back(3)">Back</button>
+        <button class="btn-next" id="nextBtn2" onclick="next(2)" disabled>Next</button>
+        <button class="btn-back" onclick="back(2)">Back</button>
       </div>
     </div>
 
-    <!-- STEP 4: HOUSEHOLD SIZE -->
-    <div class="step" data-step="4">
+    <!-- STEP 3: HOUSEHOLD SIZE -->
+    <div class="step" data-step="3">
       <h2 class="q-title">What is your household size?</h2>
       <p class="q-sub">Select the number of people to include in your quote.</p>
       <div class="choice-grid cols-4" id="hhGrid">
@@ -401,28 +360,31 @@
         <div class="choice" data-val="8+" onclick="selectChoice(this,'hhGrid','household')">8+</div>
       </div>
       <div class="btn-row">
+        <button class="btn-next" id="nextBtn3" onclick="next(3)" disabled>Next</button>
+        <button class="btn-back" onclick="back(3)">Back</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: INCOME -->
+    <div class="step" data-step="4">
+      <h2 class="q-title">What is your estimated household income?</h2>
+      <p class="q-sub">Used to determine eligibility for income-based subsidies.</p>
+      <div class="choice-grid" id="incomeGrid">
+        <div class="choice" data-val="< $25k" onclick="selectChoice(this,'incomeGrid','income')">Under $25,000</div>
+        <div class="choice" data-val="$25k - $50k" onclick="selectChoice(this,'incomeGrid','income')">$25k - $50,000</div>
+        <div class="choice" data-val="$50k - $75k" onclick="selectChoice(this,'incomeGrid','income')">$50k - $75,000</div>
+        <div class="choice" data-val="$75k - $100k" onclick="selectChoice(this,'incomeGrid','income')">$75k - $100,000</div>
+        <div class="choice" data-val="$100k - $150k" onclick="selectChoice(this,'incomeGrid','income')">$100k - $150,000</div>
+        <div class="choice" data-val="$150k+" onclick="selectChoice(this,'incomeGrid','income')">Over $150,000</div>
+      </div>
+      <div class="btn-row">
         <button class="btn-next" id="nextBtn4" onclick="next(4)" disabled>Next</button>
         <button class="btn-back" onclick="back(4)">Back</button>
       </div>
     </div>
 
-    <!-- STEP 5: INCOME -->
+    <!-- STEP 5: LIFE EVENTS (Submits automatically or via button) -->
     <div class="step" data-step="5">
-      <h2 class="q-title">What is your estimated household income?</h2>
-      <p class="q-sub">Used to determine eligibility for income-based subsidies.</p>
-      <div class="slider-wrap">
-        <div class="slider-val" id="incomeVal">$71,000</div>
-        <input type="range" id="incomeSlider" min="15000" max="107000" step="1000" value="71000" oninput="updateIncome()">
-        <div class="slider-ticks"><span>$15k</span><span>$61k</span><span>$107k or more</span></div>
-      </div>
-      <div class="btn-row">
-        <button class="btn-next" onclick="next(5)">Next</button>
-        <button class="btn-back" onclick="back(5)">Back</button>
-      </div>
-    </div>
-
-    <!-- STEP 6: LIFE EVENTS -->
-    <div class="step" data-step="6">
       <h2 class="q-title">Have you experienced any of these in the last 60 days?</h2>
       <p class="q-sub">Life events can open a special enrollment window.</p>
       <div class="life-grid" id="lifeGrid">
@@ -436,75 +398,17 @@
         <div class="life-card none-opt selected" data-val="None" onclick="toggleLife(this,true)"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>None of these apply</div>
       </div>
       <div class="btn-row">
-        <button class="btn-next" onclick="next(6)">Next</button>
-        <button class="btn-back" onclick="back(6)">Back</button>
+        <button class="btn-next" onclick="submitForm()">See Results</button>
+        <button class="btn-back" onclick="back(5)">Back</button>
       </div>
     </div>
 
-    <!-- STEP 7: ADDRESS -->
-    <div class="step" data-step="7">
-      <h2 class="q-title">What is your current address?</h2>
-      <p class="q-sub" id="addrSub">Used to match you with plans available near you.</p>
-      <div class="row2">
-        <div>
-          <label class="field-label">Street address <span class="req">*</span></label>
-          <input type="text" id="address" placeholder="123 Main St">
-        </div>
-        <div>
-          <label class="field-label">Zip code <span class="req">*</span></label>
-          <input type="text" id="zip2" maxlength="5" inputmode="numeric" placeholder="80741">
-        </div>
-      </div>
-      <div class="btn-row">
-        <button class="btn-next" onclick="next(7)">Next</button>
-        <button class="btn-back" onclick="back(7)">Back</button>
-      </div>
-    </div>
-
-    <!-- STEP 8: NAME -->
-    <div class="step" data-step="8">
-      <h2 class="q-title">What is your full name?</h2>
-      <div class="row2">
-        <div>
-          <label class="field-label">First name <span class="req">*</span></label>
-          <input type="text" id="fname" placeholder="John">
-        </div>
-        <div>
-          <label class="field-label">Last name <span class="req">*</span></label>
-          <input type="text" id="lname" placeholder="Doe">
-        </div>
-      </div>
-      <div class="btn-row">
-        <button class="btn-next" onclick="next(8)">Next</button>
-        <button class="btn-back" onclick="back(8)">Back</button>
-      </div>
-    </div>
-
-    <!-- STEP 9: CONTACT -->
-    <div class="step" data-step="9">
-      <h2 class="q-title">What is your contact information?</h2>
-      <p class="q-sub">So an advisor can send your quote and follow up.</p>
-      <label class="field-label">Email <span class="req">*</span></label>
-      <input type="email" id="email" placeholder="email@example.com" style="margin-bottom:20px;">
-      <label class="field-label">Phone <span class="req">*</span></label>
-      <div class="phone-grid">
-        <input type="text" id="p1" maxlength="3" inputmode="numeric" placeholder="555">
-        <input type="text" id="p2" maxlength="3" inputmode="numeric" placeholder="555">
-        <input type="text" id="p3" maxlength="4" inputmode="numeric" placeholder="5555">
-      </div>
-      <p class="hint">By submitting, you agree to be contacted by Health Bill Advisor and its licensed insurance partners about plan options, by phone, text, or email. Consent isn't required to purchase any plan. See our <a href="#">Privacy Policy</a> and <a href="#">Terms</a>.</p>
-      <div class="btn-row">
-        <button class="btn-next" onclick="submitForm()">Submit</button>
-        <button class="btn-back" onclick="back(9)">Back</button>
-      </div>
-    </div>
-
-    <!-- STEP 10: FINAL CTA -->
-    <div class="step" data-step="10">
+    <!-- STEP 6: FINAL CTA -->
+    <div class="step" data-step="6">
       <div class="cta-final">
         <span class="stamp">QUOTE READY</span>
-        <h2 id="ctaName">You're all set!</h2>
-        <p>Based on your answers, you may qualify for lower monthly costs. A licensed advisor is standing by to walk through your options and lock in your rate.</p>
+        <h2>You're all set!</h2>
+        <p>Based on your answers, you qualify to review lower monthly costs. A licensed advisor is standing by to walk through your options and lock in your rate.</p>
         <a class="call-btn" href="tel:8775550199">
           <span class="ico"><svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .5 1 1.1v3.7c0 .6-.5 1.1-1.1 1.1C10.6 21.5 2.5 13.4 2.5 3.7c0-.6.5-1.1 1.1-1.1H7.3c.6 0 1.1.5 1.1 1.1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.2 1.1L6.6 10.8z"/></svg></span>
           <span>
@@ -525,15 +429,10 @@
   </div>
 
 <script>
-  const totalSteps = 11; // steps 0-10
+  const totalSteps = 7; // steps 0-6
   let current = 0;
   const answers = {};
   const refCode = 'HBA-' + Math.floor(100000 + Math.random()*899999);
-
-  const zipCities = {
-    '80741':'Merino, CO','80202':'Denver, CO','90245':'El Segundo, CA',
-    '10001':'New York, NY','60601':'Chicago, IL','75201':'Dallas, TX'
-  };
 
   const logoSVG = `<svg width="150" height="38" viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
     <g transform="translate(4,10)">
@@ -579,37 +478,12 @@
   function back(fromStep){ showStep(fromStep-1); }
 
   function validateStep(s){
-    if(s===0){
-      const z = document.getElementById('zip').value.trim();
-      if(z.length!==5){ alert('Please enter a valid 5-digit zip code.'); return false; }
-      answers.zip = z;
-      const city = zipCities[z] || 'your area';
-      document.getElementById('bannerText').textContent = 'Find & Compare Health Plans in ' + city;
-      document.getElementById('addrSub').textContent = 'Used to match you with plans available near ' + city + '.';
-      return true;
-    }
-    if(s===1){
-      const d = document.getElementById('dob').value;
-      if(!d){ alert('Please enter your date of birth.'); return false; }
-      answers.dob = d; return true;
-    }
-    if(s===2){ return !!answers.gender; }
-    if(s===3){ return !!answers.medical; }
-    if(s===4){ return !!answers.household; }
-    if(s===5){ return true; }
-    if(s===6){ return true; }
-    if(s===7){
-      const a = document.getElementById('address').value.trim();
-      const z2 = document.getElementById('zip2').value.trim();
-      if(!a || z2.length!==5){ alert('Please enter your street address and a valid zip code.'); return false; }
-      answers.address=a; answers.zip2=z2; return true;
-    }
-    if(s===8){
-      const f = document.getElementById('fname').value.trim();
-      const l = document.getElementById('lname').value.trim();
-      if(!f || !l){ alert('Please enter your first and last name.'); return false; }
-      answers.fname=f; answers.lname=l; return true;
-    }
+    if(s===0) return !!answers.age;
+    if(s===1) return !!answers.gender;
+    if(s===2) return !!answers.medical;
+    if(s===3) return !!answers.household;
+    if(s===4) return !!answers.income;
+    if(s===5) return true; // Life events has a default "none" state
     return true;
   }
 
@@ -642,26 +516,10 @@
     answers.lifeEvents = lifeEvents;
   }
 
-  function updateIncome(){
-    const v = document.getElementById('incomeSlider').value;
-    const label = (v >= 107000) ? '$107,000 or more' : ('$' + Number(v).toLocaleString());
-    document.getElementById('incomeVal').textContent = label;
-    answers.income = v;
-  }
-
   function submitForm(){
-    const email = document.getElementById('email').value.trim();
-    const p1 = document.getElementById('p1').value.trim();
-    const p2 = document.getElementById('p2').value.trim();
-    const p3 = document.getElementById('p3').value.trim();
-    if(!email.includes('@')){ alert('Please enter a valid email address.'); return; }
-    if(p1.length!==3 || p2.length!==3 || p3.length!==4){ alert('Please enter a valid 10-digit phone number.'); return; }
-    answers.email = email;
-    answers.phone = p1+'-'+p2+'-'+p3;
     bumpSavings();
-    document.getElementById('ctaName').textContent = (answers.fname ? answers.fname+', y' : "Y") + "ou're all set!";
     document.getElementById('finalSavings').textContent = '$' + (answers._savings||0) + '/mo';
-    showStep(10);
+    showStep(6);
   }
 
   updateChrome();
